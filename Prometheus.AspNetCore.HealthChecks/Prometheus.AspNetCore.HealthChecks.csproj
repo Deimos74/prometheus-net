@@ -25,10 +25,10 @@
 		<EmbedUntrackedSources>true</EmbedUntrackedSources>
 
 		<!-- NuGet packaging config -->
-		<PackageId>prometheus-net.Contrib.AspNetCore.HealthChecks</PackageId>
+		<PackageId>prometheus-net.Contrib.Plarium.AspNetCore.HealthChecks</PackageId>
 		<Authors>sandersaares</Authors>
-		<Company>prometheus-net.Contrib</Company>
-		<Product>prometheus-net.Contrib</Product>
+		<Company>prometheus-net.Contrib.Plarium</Company>
+		<Product>prometheus-net.Contrib.Plarium</Product>
 		<Description>ASP.NET Core Health Checks integration with Prometheus</Description>
 		<Copyright>Copyright © prometheus-net developers</Copyright>
 		<PackageProjectUrl>https://github.com/Deimos74/prometheus-net</PackageProjectUrl>
