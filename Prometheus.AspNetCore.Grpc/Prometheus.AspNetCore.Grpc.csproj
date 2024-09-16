@@ -25,7 +25,7 @@
 		<EmbedUntrackedSources>true</EmbedUntrackedSources>
 
 		<!-- NuGet packaging config -->
-		<PackageId>prometheus-net.AspNetCore.Grpc</PackageId>
+		<PackageId>prometheus-net.Contrib.Plarium.AspNetCore.Grpc</PackageId>
 		<Authors>sandersaares, Deimos74</Authors>
 		<Description>ASP.NET Core gRPC integration with Prometheus(Fork)</Description>
 		<Copyright>Copyright © prometheus-net developers</Copyright>
