@@ -78,9 +78,9 @@ namespace Prometheus.Tests.GrpcExporter
 
             await _sut.Invoke(_httpContext);
 
-            var labels = counter.GetAllLabels().Single();
+            var labels = counter.GetAllInstanceLabelsUnsafe().Single();
             Assert.AreEqual(
-                expectedService, 
+                expectedService,
                 GetLabelValueOrDefault(labels, GrpcRequestLabelNames.Service)
             );
             Assert.AreEqual(
@@ -89,11 +89,12 @@ namespace Prometheus.Tests.GrpcExporter
             );
         }
 
-        private static string GetLabelValueOrDefault(Labels labels, string name)
+        private static string GetLabelValueOrDefault(LabelSequence labels, string name)
         {
-            return labels.Names
-                .Zip(labels.Values, (n, v) => (n, v))
-                .FirstOrDefault(pair => pair.n == name).v;
+            if (labels.TryGetLabelValue(name, out var value))
+                return value;
+
+            return default;
         }
     }
 }

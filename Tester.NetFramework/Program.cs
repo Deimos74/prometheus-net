@@ -5,6 +5,10 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
+#if NET6_0_OR_GREATER
+using System.Diagnostics.Metrics;
+#endif
+
 namespace tester
 {
     internal class Program
@@ -17,10 +21,10 @@ namespace tester
             // Replace the first line with an appropriate type of tester to run different manual tests.
             //var tester = new MetricPusherTester();
             //var tester = new KestrelMetricServerTester();
-            //var tester = new AspNetCoreMiddlewareTester();
-            var tester = new GrpcMiddlewareTester();
+            var tester = new AspNetCoreMiddlewareTester();
+            //var tester = new GrpcMiddlewareTester();
             //var tester = new MetricServerTester();
-            
+
             // For testing Kestrel metric server with HTTPS, you need at least a self-signed certificate (one included here)
             // and the matching domain pointed to 127.0.0.1 (e.g. hardcoded in the PCs hosts file) and you also need to
             // import this certificate into your Trusted Root Certification Authorities certificate store to trust it.
@@ -32,10 +36,7 @@ namespace tester
             var metricServer = tester.InitializeMetricServer();
             metricServer?.Start();
 
-            var counter = Metrics.CreateCounter("myCounter", "help text", new CounterConfiguration
-            {
-                LabelNames = new[] { "method", "endpoint" }
-            });
+            var counter = Metrics.CreateCounter("myCounter", "help text", new[] { "method", "endpoint" });
             counter.WithLabels("GET", "/").Inc();
             counter.WithLabels("POST", "/cancel").Inc();
 
@@ -95,6 +96,15 @@ namespace tester
 
 #if NETCOREAPP
             var diagnosticSourceRegistration = DiagnosticSourceAdapter.StartListening();
+            var eventCounterRegistration = EventCounterAdapter.StartListening();
+#endif
+
+#if NET6_0_OR_GREATER
+            var meter = new Meter("sample.dotnet.meter", "1.2.3");
+            var meterCounter = meter.CreateCounter<double>("sample_counter");
+            var meterGauge = meter.CreateObservableGauge<byte>("sample_gauge", () => 92, "Buckets", "How much cheese is loaded");
+
+            var meterRegistration = MeterAdapter.StartListening();
 #endif
 
             var cts = new CancellationTokenSource();
@@ -112,12 +122,16 @@ namespace tester
                     {
                         var duration = Stopwatch.StartNew();
 
+
                         counter.Inc();
                         counter.Labels("GET", "/").Inc(2);
                         gauge.Set(random.NextDouble() + 2);
                         hist.Observe(random.NextDouble());
                         summary.Observe(random.NextDouble());
 
+#if NET6_0_OR_GREATER
+                        meterCounter.Add(1);
+#endif
                         try
                         {
                             tester.OnTimeToObserveMetrics();

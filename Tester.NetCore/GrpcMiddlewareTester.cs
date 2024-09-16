@@ -6,11 +6,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Prometheus;
-using System;
-using System.IO;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 using Tester;
 
 namespace tester
@@ -59,19 +54,15 @@ namespace tester
                 .RunAsync(_cts.Token);
         }
 
+        private static readonly HttpClient _httpClient = new();
+
         public override void OnTimeToObserveMetrics()
         {
             // Every time we observe metrics, we also asynchronously perform a dummy request for test data.
             StartDummyRequest();
 
-            var httpRequest = (HttpWebRequest)WebRequest.Create($"https://localhost:{TesterConstants.TesterPort}/metrics");
-            httpRequest.Method = "GET";
-
-            using (var httpResponse = (HttpWebResponse)httpRequest.GetResponse())
-            {
-                var text = new StreamReader(httpResponse.GetResponseStream()).ReadToEnd();
-                Console.WriteLine(text);
-            }
+            var text = _httpClient.GetStringAsync($"http://localhost:{TesterConstants.TesterPort}/metrics").Result;
+            Console.WriteLine(text);
         }
 
         private void StartDummyRequest()

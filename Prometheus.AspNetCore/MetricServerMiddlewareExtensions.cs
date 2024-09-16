@@ -1,83 +1,131 @@
-﻿using System;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using System.ComponentModel;
 
-namespace Prometheus
+namespace Prometheus;
+
+public static class MetricServerMiddlewareExtensions
 {
-    public static class MetricServerMiddlewareExtensions
+    private const string DefaultDisplayName = "Prometheus metrics";
+
+    /// <summary>
+    /// Starts a Prometheus metrics exporter using endpoint routing.
+    /// The default URL is /metrics, which is a Prometheus convention.
+    /// Use static methods on the <see cref="Metrics"/> class to create your metrics.
+    /// </summary>
+    public static IEndpointConventionBuilder MapMetrics(
+        this IEndpointRouteBuilder endpoints,
+        Action<MetricServerMiddleware.Settings> configure,
+        string pattern = "/metrics"
+    )
     {
+        var pipeline = endpoints
+            .CreateApplicationBuilder()
+            .InternalUseMiddleware(configure)
+            .Build();
 
-#if NETCOREAPP3_1
+        return endpoints
+            .Map(pattern, pipeline)
+            .WithDisplayName(DefaultDisplayName);
+    }
 
-        private const string DefaultDisplayName = "Prometheus metrics";
+    /// <summary>
+    /// Starts a Prometheus metrics exporter, filtering to only handle requests received on a specific port.
+    /// The default URL is /metrics, which is a Prometheus convention.
+    /// Use static methods on the <see cref="Metrics"/> class to create your metrics.
+    /// </summary>
+    public static IApplicationBuilder UseMetricServer(
+        this IApplicationBuilder builder,
+        int port,
+        Action<MetricServerMiddleware.Settings> configure,
+        string? url = "/metrics")
+    {
+        // If no URL, use root URL.
+        url ??= "/";
 
-        /// <summary>
-        /// Starts a Prometheus metrics exporter using endpoint routing.
-        /// The default URL is /metrics, which is a Prometheus convention.
-        /// Use static methods on the <see cref="Metrics"/> class to create your metrics.
-        /// </summary>
-        public static IEndpointConventionBuilder MapMetrics(
-            this IEndpointRouteBuilder endpoints,
-            string pattern = "/metrics",
-            CollectorRegistry? registry = null
-        )
+        return builder
+            .Map(url, b => b.MapWhen(PortMatches(), b1 => b1.InternalUseMiddleware(configure)));
+
+        Func<HttpContext, bool> PortMatches()
         {
-
-            var pipeline = endpoints
-                .CreateApplicationBuilder()
-                .UseMiddleware<MetricServerMiddleware>(
-                    new MetricServerMiddleware.Settings
-                    {
-                        Registry = registry
-                    }
-                )
-                .Build();
-
-            return endpoints
-                .Map(pattern, pipeline)
-                .WithDisplayName(DefaultDisplayName);
-
+            return c => c.Connection.LocalPort == port;
         }
+    }
 
-#endif
+    /// <summary>
+    /// Starts a Prometheus metrics exporter.
+    /// The default URL is /metrics, which is a Prometheus convention.
+    /// Use static methods on the <see cref="Metrics"/> class to create your metrics.
+    /// </summary>
+    public static IApplicationBuilder UseMetricServer(
+        this IApplicationBuilder builder,
+        Action<MetricServerMiddleware.Settings> configure,
+        string? url = "/metrics")
+    {
+        if (url != null)
+            return builder.Map(url, b => b.InternalUseMiddleware(configure));
+        else
+            return builder.InternalUseMiddleware(configure);
+    }
 
-        /// <summary>
-        /// Starts a Prometheus metrics exporter, filtering to only handle requests received on a specific port.
-        /// The default URL is /metrics, which is a Prometheus convention.
-        /// Use static methods on the <see cref="Metrics"/> class to create your metrics.
-        /// </summary>
-        public static IApplicationBuilder UseMetricServer(this IApplicationBuilder builder, int port, string? url = "/metrics", CollectorRegistry? registry = null)
+    #region Legacy methods without the configure action
+    /// <summary>
+    /// Starts a Prometheus metrics exporter using endpoint routing.
+    /// The default URL is /metrics, which is a Prometheus convention.
+    /// Use static methods on the <see cref="Metrics"/> class to create your metrics.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)] // It is not exactly obsolete but let's de-emphasize it.
+    public static IEndpointConventionBuilder MapMetrics(
+        this IEndpointRouteBuilder endpoints,
+        string pattern = "/metrics",
+        CollectorRegistry? registry = null
+    )
+    {
+        return MapMetrics(endpoints, LegacyConfigure(registry), pattern);
+    }
+
+    /// <summary>
+    /// Starts a Prometheus metrics exporter, filtering to only handle requests received on a specific port.
+    /// The default URL is /metrics, which is a Prometheus convention.
+    /// Use static methods on the <see cref="Metrics"/> class to create your metrics.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)] // It is not exactly obsolete but let's de-emphasize it.
+    public static IApplicationBuilder UseMetricServer(
+        this IApplicationBuilder builder,
+        int port,
+        string? url = "/metrics",
+        CollectorRegistry? registry = null)
+    {
+        return UseMetricServer(builder, port, LegacyConfigure(registry), url);
+    }
+
+    /// <summary>
+    /// Starts a Prometheus metrics exporter.
+    /// The default URL is /metrics, which is a Prometheus convention.
+    /// Use static methods on the <see cref="Metrics"/> class to create your metrics.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)] // It is not exactly obsolete but let's de-emphasize it.
+    public static IApplicationBuilder UseMetricServer(
+        this IApplicationBuilder builder,
+        string? url = "/metrics",
+        CollectorRegistry? registry = null)
+    {
+        return UseMetricServer(builder, LegacyConfigure(registry), url);
+    }
+
+    private static Action<MetricServerMiddleware.Settings> LegacyConfigure(CollectorRegistry? registry) =>
+        (MetricServerMiddleware.Settings settings) =>
         {
-            return builder
-                .Map(url, b => b.MapWhen(PortMatches(), b1 => b1.InternalUseMiddleware(registry)));
+            settings.Registry = registry;
+        };
+    #endregion
 
-            Func<HttpContext, bool> PortMatches()
-            {
-                return c => c.Connection.LocalPort == port;
-            }
-        }
+    private static IApplicationBuilder InternalUseMiddleware(this IApplicationBuilder builder, Action<MetricServerMiddleware.Settings> configure)
+    {
+        var settings = new MetricServerMiddleware.Settings();
+        configure(settings);
 
-        /// <summary>
-        /// Starts a Prometheus metrics exporter.
-        /// The default URL is /metrics, which is a Prometheus convention.
-        /// Use static methods on the <see cref="Metrics"/> class to create your metrics.
-        /// </summary>
-        public static IApplicationBuilder UseMetricServer(this IApplicationBuilder builder, string? url = "/metrics", CollectorRegistry? registry = null)
-        {
-            // If there is a URL to map, map it and re-enter without the URL.
-            if (url != null)
-                return builder.Map(url, b => b.InternalUseMiddleware(registry));
-            else
-                return builder.InternalUseMiddleware(registry);
-        }
-
-        private static IApplicationBuilder InternalUseMiddleware(this IApplicationBuilder builder, CollectorRegistry? registry = null)
-        {
-            return builder.UseMiddleware<MetricServerMiddleware>(new MetricServerMiddleware.Settings
-            {
-                Registry = registry
-            });
-        }
+        return builder.UseMiddleware<MetricServerMiddleware>(settings);
     }
 }

@@ -1,16 +1,10 @@
 ﻿using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Hosting;
-using Prometheus;
-using System;
-using System.IO;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Options;
-using System.Net.Http;
+using Prometheus;
 
 namespace tester
 {
@@ -36,17 +30,31 @@ namespace tester
                     services.AddHttpClient(Options.DefaultName).UseHttpClientMetrics();
                     services.AddHttpClient("client2").UseHttpClientMetrics();
                     services.AddHttpClient("client3").UseHttpClientMetrics();
+
+                    // Depending on whether this is here or not, the "page" label is added to default HTTP request metrics.
+                    services.AddRazorPages();
                 })
                 .Configure(app =>
                 {
                     _httpClientFactory = app.ApplicationServices.GetRequiredService<IHttpClientFactory>();
 
-                    app.UseMetricServer();
+                    // Legacy approach. Still works but we prefer endpoints mapping.
+                    //app.UseMetricServer();
 
                     app.UseRouting();
 
                     // We capture metrics URL just for test data.
-                    app.UseHttpMetrics(options => options.CaptureMetricsUrl = true);
+                    app.UseHttpMetrics(options =>
+                    {
+                        options.CaptureMetricsUrl = true;
+
+                        options.AddCustomLabel("host", context => context.Request.Host.Host);
+                    });
+
+                    app.UseEndpoints(endpoints =>
+                    {
+                        endpoints.MapMetrics();
+                    });
                 })
                 .ConfigureLogging(logging => logging.ClearProviders())
                 .Build()
@@ -58,14 +66,8 @@ namespace tester
             // Every time we observe metrics, we also asynchronously perform a dummy request for test data.
             StartDummyRequest();
 
-            var httpRequest = (HttpWebRequest)WebRequest.Create($"http://localhost:{TesterConstants.TesterPort}/metrics");
-            httpRequest.Method = "GET";
-
-            using (var httpResponse = (HttpWebResponse)httpRequest.GetResponse())
-            {
-                var text = new StreamReader(httpResponse.GetResponseStream()).ReadToEnd();
-                Console.WriteLine(text);
-            }
+            var text = _httpClientFactory.CreateClient().GetStringAsync($"http://localhost:{TesterConstants.TesterPort}/metrics").Result;
+            Console.WriteLine(text);
         }
 
         private void StartDummyRequest()

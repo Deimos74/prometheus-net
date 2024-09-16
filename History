@@ -1,3 +1,57 @@
+* 8.2.1
+- Fix occasional "Collection was modified" exception when serializing metrics. #464
+* 8.2.0
+- .WithLabels() & similar now accept ReadOnlyMemory<string> as alternative to string[]. Same behavior, just easier to use if you already have a ReadOnlyMemory<string>.
+- .WithLabels() & similar now accept ReadOnlySpan<string> as alternative to string[]. This enables allocation-free metric instance creation if a metric instance with these labels is already known.
+- Incorporated various optimizations to reduce the required CPU time and allocated memory, including #410, #443 and other contributions.
+- Observation of large histograms is now 10-30% faster on machines that support AVX2 instructions.
+- health checks exposed via ForwardToPrometheus() no longer create a default metric if a custom metric is provided #444
+* 8.1.1
+- Fix bug in .NET Meters API adapter for UpDownCounter, which was incorrectly transformed to Prometheus metrics. #452 and #453
+* 8.1.0
+- Add support for capturing HttpClient metrics from all registered HttpClients (`services.UseHttpClientMetrics()`).
+* 8.0.1
+- Allow ObservableCounter<T> to be reset. Previously, the MeterAdapter output got stuck on its previous maximum if the underlying Meter reset its value to a lower value. Now we transform the value 1:1.
+* 8.0.0
+- Added OpenMetrics exposition format support (#388).
+- Added exemplar support for Counter and Histogram (#388).
+- The ':' character is no longer allowed in metric or label names. For metric names, Prometheus standard practice is to use colon only in recording rules.
+- Publish symbol packages and add Source Link support for easier debugging experience.
+- Fix defect where metrics with different labels could overwrite each other in specific circumstances with multiple metric factories in use (#389).
+- Ensure even harder that MetricPusher flushes the final state before stopping (#383 and #384)
+- Simplify DotNetStats built-in collector code for ease of readability and more best practices (#365, #364)
+- Slightly improve Counter performance under concurrent load.
+- Reduce memory allocations performed during ASP.NET Core HTTP request tracking.
+- By default, EventCounterAdapter will only listen to a small predefined set of general-purpose useful event sources, to minimize resource consumption in the default configuration. A custom event source filter must now be provided to enable listening for additional event sources.
+- EventCounterAdapter will only refresh data every 10 seconds by default, to reduce amount of garbage generated in memory (.NET event counters are very noisy and create many temporary objects).
+- Added `IManagedLifetimeMetricFactory.WithLabels()` to enable simpler label enrichment in scenarios where lifetime-managed metric instances are used.
+* 7.1.0
+- Added back .NET Standard 2.0 support as some customers had a hard dependency on .NET Standard 2.0 (despite not being a documented feature even earlier).
+- Added (Observable)UpDownCounter support to MeterAdapter (.NET 7 specific feature).
+* 7.0.0
+- .NET Core specific functionality now targeting .NET 6.0 or greater (all previous versions will be end of life by December 2022).
+- Relaxed the API restriction that forbade you to create multiple metrics with the same name but different label names. While this is a Prometheus anti-pattern, it is a standard pattern in other metrics technologies and we will allow it in the name of interoperability.
+- Added IMetricFactory.WithLabels() to define static labels per-factory and reduce the effort needed by users when defining static labels in specific scopes.
+- Added automatic metric expiration feature, to remove timeseries when they are no longer used after a while. This improves interoperability with other metrics technologies such as .NET Meters.
+- (Breaking change) Rewrite of the MeterAdapter functionality to bridge .NET 6 metrics to Prometheus. API remains equivalent, though options class changed. Output format (what metrics are published) is completely different. Now it translates metric names (instead of putting them in labels) and preserves tags (labels) provided via the .NET Meters API. Added sample project to demonstrate functionality. Ref #359
+- (Breaking change) Dropped support for .NET Standard 2.0 - now will target specifically .NET 6.0 and .NET Framework 4.6.2. This was already documented before but there was "unofficial" support also for .NET Standard remaining. This is now removed.
+- (Breaking change) EventCounterAdapter output format changed to translate counters to Prometheus metrics and to improve usability by publishing both counters and gauges from ambiguous event counters.
+- EventCounterAdapter and MeterAdapter are now enabled on startup by default.
+- Added some debug metrics to indicate the number of metric families, instances and timeseries being exported by prometheus-net.
+- Added typical benchmark results to readme for easy reference, and to show relative speed of the simple versus complex instruments.
+- Removed MetricConfiguration.StaticLabels because it had negative performance impact on many code paths that did not use it. The same functionality can be manually implemented in user code. Static labels remain available on registry and factory level.
+- When a before-collection metrics update callback throws an exception, it is now logged and ignored instead of breaking all metrics collection.
+- EventCounterAdapter now defaults to Informational events only, for reduced performance overhead. Can be configured via callback.
+* 6.0.0
+- Dropped library support for unsupported .NET runtime versions (.NET 2.1).
+- If Razor Pages is enabled, the "page" label is now automatically added to the default HTTP server metrics, unless there is a user-defined label already present with this name.
+- The "endpoint" label is now automatically added to the default HTTP server metrics, containing this endpoint routing route pattern of the request, unless there is a user-defined label already present with this name.
+- Added integration with .NET EventCounters, which can now be easily exposed as Promtheus metrics (see EventCounterAdapter class).
+- Added integration with .NET Meters, which can now be easily exposed as Promtheus metrics (see MeterAdapter class).
+- Added ReplaceOnPush option to MetricPusher #305 #322.
+- Minimum .NET Framework version is now 4.6.2.
+* 5.1.0
+- Add support for adding custom label value providers to HTTP server metrics. #347
 * 5.0.2
 - Bugfix: HttpClientMetrics under concurrent load with long-running requests were leading to broken response streams. #336
 * 5.0.1

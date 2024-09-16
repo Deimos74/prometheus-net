@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\MSTest.TestAdapter.2.0.0\build\net45\MSTest.TestAdapter.props" Condition="Exists('..\packages\MSTest.TestAdapter.2.0.0\build\net45\MSTest.TestAdapter.props')" />
+  <Import Project="..\packages\MSTest.TestAdapter.3.0.2\build\net462\MSTest.TestAdapter.props" Condition="Exists('..\packages\MSTest.TestAdapter.3.0.2\build\net462\MSTest.TestAdapter.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Prometheus.Tests</RootNamespace>
     <AssemblyName>tests.netframework</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">15.0</VisualStudioVersion>
@@ -19,6 +19,7 @@
     <TestProjectType>UnitTest</TestProjectType>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -50,29 +51,40 @@
     <AssemblyOriginatorKeyFile>..\Resources\prometheus-net.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <HintPath>..\packages\Castle.Core.4.4.0\lib\net45\Castle.Core.dll</HintPath>
+    <Reference Include="Castle.Core, Version=5.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Castle.Core.5.1.0\lib\net462\Castle.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\MSTest.TestFramework.2.0.0\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.dll</HintPath>
+      <HintPath>..\packages\MSTest.TestFramework.3.0.2\lib\net462\Microsoft.VisualStudio.TestPlatform.TestFramework.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\MSTest.TestFramework.2.0.0\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll</HintPath>
+      <HintPath>..\packages\MSTest.TestFramework.3.0.2\lib\net462\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="NSubstitute, Version=4.2.0.0, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
-      <HintPath>..\packages\NSubstitute.4.2.1\lib\net46\NSubstitute.dll</HintPath>
+    <Reference Include="NSubstitute, Version=4.4.0.0, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
+      <HintPath>..\packages\NSubstitute.4.4.0\lib\net46\NSubstitute.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.6.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.3\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
@@ -85,32 +97,90 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Prometheus.NetStandard\Prometheus.NetStandard.csproj">
-      <Project>{ba482927-f0bc-462c-8ba0-c476d93621bc}</Project>
-      <Name>Prometheus.NetStandard</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CollectorRegistryTests.cs" />
-    <Compile Include="CounterExtensionTests.cs" />
-    <Compile Include="GaugeExtensionTests.cs" />
-    <Compile Include="HistogramTests.cs" />
-    <Compile Include="HttpClientMetrics\ConnectivityCheck.cs" />
-    <Compile Include="HttpClientMetrics\HttpClientInProgressHandlerTests.cs" />
-    <Compile Include="HttpClientMetrics\HttpClientRequestCountHandlerTests.cs" />
-    <Compile Include="HttpClientMetrics\HttpClientRequestDurationHandlerTests.cs" />
-    <Compile Include="HttpClientMetrics\HttpClientResponseDurationHandlerTests.cs" />
-    <Compile Include="MetricInitializationTests.cs" />
-    <Compile Include="MetricPusherTests.cs" />
-    <Compile Include="MetricsTests.cs" />
-    <Compile Include="QuantileStreamTests.cs" />
-    <Compile Include="RandomExtensions.cs" />
-    <Compile Include="StaticLabelTests.cs" />
-    <Compile Include="ThreadSafeDoubleTests.cs" />
-    <Compile Include="ThreadSafeLongTests.cs" />
+    <Compile Include="..\Tests.NetCore\BreakableDelayer.cs">
+      <Link>BreakableDelayer.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests.NetCore\CollectorRegistryTests.cs">
+      <Link>CollectorRegistryTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests.NetCore\CounterExtensionTests.cs">
+      <Link>CounterExtensionTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests.NetCore\CounterTests.cs">
+      <Link>CounterTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests.NetCore\FactoryLabelTests.cs">
+      <Link>FactoryLabelTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests.NetCore\GaugeExtensionTests.cs">
+      <Link>GaugeExtensionTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests.NetCore\GaugeTests.cs">
+      <Link>GaugeTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests.NetCore\HistogramTests.cs">
+      <Link>HistogramTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests.NetCore\HttpClientMetrics\ConnectivityCheck.cs">
+      <Link>HttpClientMetrics\ConnectivityCheck.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests.NetCore\HttpClientMetrics\HttpClientInProgressHandlerTests.cs">
+      <Link>HttpClientMetrics\HttpClientInProgressHandlerTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests.NetCore\HttpClientMetrics\HttpClientRequestCountHandlerTests.cs">
+      <Link>HttpClientMetrics\HttpClientRequestCountHandlerTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests.NetCore\HttpClientMetrics\HttpClientRequestDurationHandlerTests.cs">
+      <Link>HttpClientMetrics\HttpClientRequestDurationHandlerTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests.NetCore\HttpClientMetrics\HttpClientResponseDurationHandlerTests.cs">
+      <Link>HttpClientMetrics\HttpClientResponseDurationHandlerTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests.NetCore\MetricExpirationTests.cs">
+      <Link>MetricExpirationTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests.NetCore\MetricInitializationTests.cs">
+      <Link>MetricInitializationTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests.NetCore\MetricPusherTests.cs">
+      <Link>MetricPusherTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests.NetCore\MetricsTests.cs">
+      <Link>MetricsTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests.NetCore\QuantileStreamTests.cs">
+      <Link>QuantileStreamTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests.NetCore\RandomExtensions.cs">
+      <Link>RandomExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests.NetCore\StaticLabelTests.cs">
+      <Link>StaticLabelTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests.NetCore\StringSequenceTests.cs">
+      <Link>StringSequenceTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests.NetCore\TestExtensions.cs">
+      <Link>TestExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests.NetCore\TextSerializerTests.cs">
+      <Link>TextSerializerTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests.NetCore\ThreadSafeDoubleTests.cs">
+      <Link>ThreadSafeDoubleTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests.NetCore\ThreadSafeLongTests.cs">
+      <Link>ThreadSafeLongTests.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Prometheus\Prometheus.csproj">
+      <Project>{e585417c-f7dd-4d8c-a0c5-d4b79594634a}</Project>
+      <Name>Prometheus</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -118,8 +188,8 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\MSTest.TestAdapter.2.0.0\build\net45\MSTest.TestAdapter.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MSTest.TestAdapter.2.0.0\build\net45\MSTest.TestAdapter.props'))" />
-    <Error Condition="!Exists('..\packages\MSTest.TestAdapter.2.0.0\build\net45\MSTest.TestAdapter.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MSTest.TestAdapter.2.0.0\build\net45\MSTest.TestAdapter.targets'))" />
+    <Error Condition="!Exists('..\packages\MSTest.TestAdapter.3.0.2\build\net462\MSTest.TestAdapter.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MSTest.TestAdapter.3.0.2\build\net462\MSTest.TestAdapter.props'))" />
+    <Error Condition="!Exists('..\packages\MSTest.TestAdapter.3.0.2\build\net462\MSTest.TestAdapter.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MSTest.TestAdapter.3.0.2\build\net462\MSTest.TestAdapter.targets'))" />
   </Target>
-  <Import Project="..\packages\MSTest.TestAdapter.2.0.0\build\net45\MSTest.TestAdapter.targets" Condition="Exists('..\packages\MSTest.TestAdapter.2.0.0\build\net45\MSTest.TestAdapter.targets')" />
+  <Import Project="..\packages\MSTest.TestAdapter.3.0.2\build\net462\MSTest.TestAdapter.targets" Condition="Exists('..\packages\MSTest.TestAdapter.3.0.2\build\net462\MSTest.TestAdapter.targets')" />
 </Project>
